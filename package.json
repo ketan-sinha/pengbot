@@ -9,7 +9,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "discord.js": "^12.5.3",
+    "discord.js": "^13.0.0-dev.a3cbcca13da1af416c219bd64a0a6e84bb87a057",
     "eslint": "^7.28.0"
+  },
+  "dependencies": {
+    "@discordjs/opus": "^0.5.3",
+    "ffmpeg-static": "^4.3.0",
+    "markovchain": "^1.0.2"
   }
 }
