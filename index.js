@@ -7,21 +7,39 @@ const {
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
-const client = new Client({ intents: Intents.FLAGS.GUILD_MESSAGES });
+const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILDS] });
 client.commands = new Collection();
 
 client.on('ready', async () => {
   console.log('🐧🤖 is ready!');
+  client.user.setActivity('over his eggs!', { type: 'WATCHING' });
+});
 
-  for (const file of commandFiles) {
-    const cmd = require(`./commands/${file}`);
-    const data = {
-      name: cmd.name,
-      description: cmd.description,
-      options: cmd.options,
-    };
-    await client.guilds.cache.get(guild_id).commands.create(data);
-    client.commands.set(cmd.name, cmd);
+client.on('message', async message => {
+  if (!client.guilds.cache.get(guild_id).ownerID) await client.guilds.cache.get(guild_id).fetch();
+
+  if (message.content.toLowerCase() === '!deploy' && message.author.id === client.guilds.cache.get(guild_id).ownerID) {
+    console.log('Deleting commands!');
+
+    const guild = await client.guilds.fetch(guild_id);
+    const commands = guild.commands;
+    commands.set([]);
+
+    console.log('Deploying commands...');
+    for (const file of commandFiles) {
+      const cmd = require(`./commands/${file}`);
+      console.log(`Deploying ${cmd.name}...`)
+      const data = {
+        name: cmd.name,
+        description: cmd.description,
+        options: cmd.options,
+      };
+      await client.guilds.cache.get(guild_id).commands.create(data);
+      client.commands.set(cmd.name, cmd);
+      console.log(`Deployed ${cmd.name}!`);
+    }
+
+    console.log('Finished deploying!');
   }
 });
 
