@@ -1,8 +1,10 @@
 const { Client, Intents, Collection } = require('discord.js');
+
 const {
   guild_id,
   token,
 } = require('./config.json');
+const mongo = require('./mongo/mongo.js');
 
 const fs = require('fs');
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -11,8 +13,19 @@ const client = new Client({ intents: [Intents.FLAGS.GUILD_MESSAGES, Intents.FLAG
 client.commands = new Collection();
 
 client.on('ready', async () => {
+  client.user.setActivity('over their eggs!', { type: 'WATCHING' });
+  await mongo().then(mongoose => {
+    try {
+      console.log('Connected to database!');
+    }
+    catch(e) {
+      console.log(`Error connecting to database: ${e}`);
+    }
+    finally {
+      mongoose.connection.close();
+    }
+  });
   console.log('🐧🤖 is ready!');
-  client.user.setActivity('over his eggs!', { type: 'WATCHING' });
 });
 
 client.on('message', async message => {
