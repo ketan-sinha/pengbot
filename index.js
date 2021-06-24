@@ -58,12 +58,13 @@ client.on('message', async message => {
 
 client.on('interaction', async interaction => {
   const command = interaction.commandName;
+  const guild = await client.guilds.fetch(guild_id);
 
   if (!interaction.isCommand()) return;
   if (!client.commands.get(command)) return;
 
   try {
-    await client.commands.get(command).execute(interaction);
+    await client.commands.get(command).execute(interaction, client, guild);
   }
   catch (e) {
     console.error(e);
