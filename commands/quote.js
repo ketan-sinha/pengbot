@@ -1,7 +1,9 @@
-const { MessageAttachment } = require('discord.js');
+const { MessageAttachment, Client } = require('discord.js');
 const mongo = require('../mongo/mongo');
 const { quotes } = require('../resources/txt/quotes');
 const quotesSchema = require('../mongo/schemas/quotes');
+
+const thumb = new MessageAttachment('./resources/img/penghead.png', 'penghead.png');
 
 module.exports = {
   name: 'quote',
@@ -39,32 +41,62 @@ module.exports = {
       ],
     },
   ],
-  async execute(interaction) {
+  async execute(interaction, client, guild) {
     if (interaction.options.has('say')) {
-      const img = new MessageAttachment('./resources/img/pengwing.png', 'pengwing.png');
-      const quote = quotes[Math.floor(Math.random() * quotes.length)];
-      const embed = {
-        title: 'Pengwing says!',
-        description: quote,
-        image: {
-          url: 'attachment://pengwing.png',
-        },
-      };
-      await interaction.reply({ embeds: [embed], files: [img] });
+      await mongo().then(async mongoose => {
+        try {
+          const rand = Math.floor(Math.random() * await quotesSchema.countDocuments());
+          const quote = await quotesSchema.findOne().skip(rand);
+          const author = await guild.members.fetch(quote.author);
+          console.log(author);
+          const embed = {
+            title: 'Pengwing says!',
+            description: `${quote.quote}`,
+            author: author.user.username,
+            thumbnail: {
+              url: 'attachment://penghead.png',
+            },
+            footer: {
+              text: `—${author.nickname}`,
+              icon_url: author.user.avatarURL(),
+            },
+          };
+
+          console.log(quote);
+          await interaction.reply({ embeds: [embed], files: [thumb] });
+        }
+        finally {
+          mongoose.connection.close();
+        }
+      });
+
     }
     else if (interaction.options.has('add')) {
       const options = interaction.options.get('add').options;
 
       const quote = options.get('quote').value;
-      const author = options.get('author').value;
-      const context = options.get('context').value;
+      const author = await guild.members.fetch(options.get('author').value);
+      const context = options.has('context') ? options.get('context').value : null;
 
-      await interaction.reply(`quote added: ${quote}, by ${author}, with context: ${context}`);
+      const embed = {
+        title: 'Pengwing says!',
+        description: `${quote}`,
+        author: author.user.username,
+        thumbnail: {
+          url: 'attachment://penghead.png',
+        },
+        footer: {
+          text: `—${author.nickname}`,
+          icon_url: author.user.avatarURL(),
+        },
+      };
+
+      await interaction.reply({ embeds: [embed], files: [thumb] });
       await mongo().then(async (mongoose) => {
         try {
           await new quotesSchema({
             quote: quote,
-            author: author,
+            author: options.get('author').value,
             context: context,
           }).save();
         }
