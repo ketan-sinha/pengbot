@@ -1,6 +1,5 @@
 const { MessageAttachment, Client } = require('discord.js');
 const mongo = require('../mongo/mongo');
-const { quotes } = require('../resources/txt/quotes');
 const quotesSchema = require('../mongo/schemas/quotes');
 
 const thumb = new MessageAttachment('./resources/img/penghead.png', 'penghead.png');
