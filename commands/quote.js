@@ -1,8 +1,9 @@
-const { MessageAttachment, Client } = require('discord.js');
+const { MessageAttachment, MessageEmbed } = require('discord.js');
 const mongo = require('../mongo/mongo');
 const quotesSchema = require('../mongo/schemas/quotes');
 
 const thumb = new MessageAttachment('./resources/img/penghead.png', 'penghead.png');
+const color = '#90e0f7';
 
 module.exports = {
   name: 'quote',
@@ -41,28 +42,38 @@ module.exports = {
     },
   ],
   async execute(interaction, client, guild) {
+    const embed = new MessageEmbed();
+
     if (interaction.options.has('say')) {
       await mongo().then(async mongoose => {
         try {
           const rand = Math.floor(Math.random() * await quotesSchema.countDocuments());
           const quote = await quotesSchema.findOne().skip(rand);
-          const author = await guild.members.fetch(quote.author);
-          console.log(author);
-          const embed = {
-            title: 'Pengwing says!',
-            description: `${quote.quote}`,
-            author: author.user.username,
-            thumbnail: {
-              url: 'attachment://penghead.png',
-            },
-            footer: {
-              text: `—${author.nickname}`,
-              icon_url: author.user.avatarURL(),
-            },
-          };
 
-          console.log(quote);
-          await interaction.reply({ embeds: [embed], files: [thumb] });
+          if (quote) {
+            const author = await guild.members.fetch(quote.author);
+
+            embed.setTitle('Pengwing said!')
+              .setDescription(`${quote.quote}`)
+              .setColor(color)
+              .setAuthor(author.user.username, author.user.avatarURL())
+              .setThumbnail('attachment://penghead.png')
+              .setFooter(`#${quote._id}`);
+
+            if (quote.context) {
+              embed.fields = [{
+                name: 'Context',
+                value: `${quote.context}`,
+                inline: true,
+              }];
+            }
+
+            await interaction.reply({ embeds: [embed], files: [thumb] });
+          }
+          else {
+            console.log('No quotes in db');
+            await interaction.reply('No quotes found! Try adding one with `/quote add`', { ephemeral: true });
+          }
         }
         finally {
           mongoose.connection.close();
@@ -77,18 +88,12 @@ module.exports = {
       const author = await guild.members.fetch(options.get('author').value);
       const context = options.has('context') ? options.get('context').value : null;
 
-      const embed = {
-        title: 'Pengwing says!',
-        description: `${quote}`,
-        author: author.user.username,
-        thumbnail: {
-          url: 'attachment://penghead.png',
-        },
-        footer: {
-          text: `—${author.nickname}`,
-          icon_url: author.user.avatarURL(),
-        },
-      };
+      embed.setTitle('Pengwing says!')
+        .setDescription(`${quote}`)
+        .setColor(color)
+        .setAuthor(author.user.username, author.user.avatarURL())
+        .setThumbnail('attachment://penghead.png')
+        .setFooter(`#${quote._id}`);
 
       await interaction.reply({ embeds: [embed], files: [thumb] });
       await mongo().then(async (mongoose) => {
