@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
-const { mongoPath } = require('../config.json');
+const { pengdb } = require('../config.json');
 
 module.exports = async () => {
-  await mongoose.connect(mongoPath, {
+  await mongoose.connect(pengdb, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   });
