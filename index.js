@@ -41,7 +41,7 @@ client.on('message', async message => {
     console.log('Deploying commands...');
     for (const file of commandFiles) {
       const cmd = require(`./commands/${file}`);
-      console.log(`Deploying ${cmd.name}...`)
+      console.log(`Deploying ${cmd.name}...`);
       const data = {
         name: cmd.name,
         description: cmd.description,
