@@ -32,11 +32,11 @@ client.on('message', async message => {
   if (!client.guilds.cache.get(guild_id).ownerID) await client.guilds.cache.get(guild_id).fetch();
 
   if (message.content.toLowerCase() === '!deploy' && message.author.id === client.guilds.cache.get(guild_id).ownerID) {
-    console.log('Deleting commands!');
+    // console.log('Deleting commands!');
 
-    const guild = await client.guilds.fetch(guild_id);
-    const commands = guild.commands;
-    commands.set([]);
+    // const guild = await client.guilds.fetch(guild_id);
+    // const commands = guild.commands;
+    // commands.set([]);
 
     console.log('Deploying commands...');
     for (const file of commandFiles) {
@@ -47,7 +47,7 @@ client.on('message', async message => {
         description: cmd.description,
         options: cmd.options,
       };
-      await client.guilds.cache.get(guild_id).commands.create(data);
+      // await client.guilds.cache.get(guild_id).commands.create(data);
       client.commands.set(cmd.name, cmd);
       console.log(`Deployed ${cmd.name}!`);
     }
