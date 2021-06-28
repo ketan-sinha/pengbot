@@ -1,8 +1,8 @@
 const { MessageAttachment, MessageEmbed } = require('discord.js');
 const mongo = require('../mongo/mongo');
-const quotesSchema = require('../mongo/schemas/quotes');
+const quotesSchema = require('../mongo/schemas/quotesSchema');
 
-const thumb = new MessageAttachment('./resources/img/penghead.png', 'penghead.png');
+const thumb = new MessageAttachment('./resources/pengwing/penghead.png', 'penghead.png');
 const color = '#90e0f7';
 
 module.exports = {
