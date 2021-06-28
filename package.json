@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@discordjs/opus": "^0.5.3",
+    "canvas": "^2.8.0",
     "ffmpeg-static": "^4.3.0",
     "markovchain": "^1.0.2",
     "mongoose": "^5.12.14",
