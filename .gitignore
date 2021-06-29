@@ -132,3 +132,4 @@ temp/
 
 config.json
 .eslintrc.json
+*:Zone.Identifier
