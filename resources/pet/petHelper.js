@@ -1,20 +1,4 @@
 const colors = {
-  // 'white': '#FFFFFF',
-  // 'black': '#232323',
-  // 'gray': '#6B7280',
-  // 'red': '#DC2626',
-  // 'yellow': '#FBBF24',
-  // 'orange': '#F97316',
-  // 'amber': '#F59E0B',
-  // 'green': '#10B981',
-  // 'emerald': '#10B981',
-  // 'cyan': '#06B6D4',
-  // 'blue': '#3B82F6',
-  // 'indigo': '#6366F1',
-  // 'purple': '#8B5CF6',
-  // 'fuschia': '#D946EF',
-  // 'pink': '#EC4899',
-  // 'rose': '#F43F5E',
   'red': '#FFADAD',
   'orange': '#FFD6A5',
   'yellow': '#FDFFB6',
@@ -24,14 +8,6 @@ const colors = {
   'purple': '#BDB2FF',
   'pink': '#FFC6FF',
 };
-
-const layer_order = [
-  'body',
-  'stomach',
-  'feet',
-  'beak',
-  'shell',
-];
 
 const layers = {
   'body': {
@@ -48,8 +24,13 @@ const layers = {
   },
 };
 
+const filePaths = {
+  'parts': './resources/pet/parts/',
+  'bg': './resources/pet/bg/',
+};
+
 module.exports = {
   colors,
-  layer_order,
   layers,
+  filePaths,
 };
