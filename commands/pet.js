@@ -1,7 +1,10 @@
 const Canvas = require('canvas');
 const fs = require('fs');
 const { MessageAttachment } = require('discord.js');
-const { colors, layers } = require('../resources/pet/petHelper');
+const { colors, layers, filePaths } = require('../resources/pet/petHelper');
+
+const CANVAS_WIDTH = 180;
+const CANVAS_HEIGHT = 360;
 
 module.exports = {
   name: 'pet',
@@ -22,8 +25,13 @@ module.exports = {
     }
 
     function getRandomPart(partFolder) {
-      const parts = fs.readdirSync(`./resources/pet/parts/${partFolder}/`).filter(file => file.endsWith('.png'));
+      const parts = fs.readdirSync(`${filePaths.parts}${partFolder}/`).filter(file => file.endsWith('.png'));
       return parts[(Math.random() * parts.length) << 0];
+    }
+
+    function getRandomBg() {
+      const bgs = fs.readdirSync(filePaths.bg).filter(file => file.endsWith('.png'));
+      return bgs[(Math.random() * bgs.length) << 0];
     }
 
     function tintPart(tintCanvas, img, color, x, y) {
@@ -55,17 +63,44 @@ module.exports = {
       dest_ctx.drawImage(tintCanvas, x, dest.height / 2, dest.width, dest.height / 2);
     }
 
+    async function renderShadow(dest, x, y, opts) {
+      const shadow = await Canvas.loadImage(`${filePaths.parts}shadow.png`);
+      const dest_ctx = dest.getContext('2d');
+
+      if (opts && opts['alpha']) {
+        dest_ctx.globalAlpha = opts['alpha'];
+      }
+
+      dest_ctx.drawImage(shadow, x, dest.height / 2, dest.width, dest.height / 2);
+      dest_ctx.globalAlpha = 1;
+    }
+
+    async function renderBackground(dest, imgSrc, x, y, opts) {
+      const bg = await Canvas.loadImage(`${filePaths.bg}${imgSrc}`);
+      const dest_ctx = dest.getContext('2d');
+
+      if (opts && opts['alpha']) {
+        dest_ctx.globalAlpha = opts['alpha'];
+      }
+
+      dest_ctx.drawImage(bg, x, y, bg.width, bg.height, x, y, dest.width, dest.height);
+      dest_ctx.globalAlpha = 1;
+    }
+
     if (interaction.options.has('generate')) {
-      const canvas = Canvas.createCanvas(180, 360);
+      const canvas = Canvas.createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
       const context = canvas.getContext('2d');
 
       context.imageSmoothingEnabled = false;
+
+      renderBackground(canvas, getRandomBg(), 0, 0, { alpha: 1 });
+      renderShadow(canvas, 0, 0, { alpha: 0.35 });
 
       for (const layer in layers) {
 
         const opts = layers[layer];
         const part = getRandomPart(layer);
-        const imgSrc = `./resources/pet/parts/${layer}/${part}`;
+        const imgSrc = `${filePaths.parts}${layer}/${part}`;
 
         if (opts['tinted']) {
           await renderPart(layer, canvas, imgSrc, 0, 0, { color: getRandomColor() });
