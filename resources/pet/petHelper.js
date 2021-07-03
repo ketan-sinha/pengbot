@@ -27,6 +27,7 @@ const layers = {
 const filePaths = {
   'parts': './resources/pet/parts/',
   'bg': './resources/pet/bg/',
+  'eggBase_img': './resources/pet/egg/egg_base.png',
 };
 
 module.exports = {
